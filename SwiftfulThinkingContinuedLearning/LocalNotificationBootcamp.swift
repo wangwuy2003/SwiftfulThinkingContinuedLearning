@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UserNotifications
+import CoreLocation
 
 class NotificationManager {
     static let shared = NotificationManager()
@@ -33,7 +34,37 @@ class NotificationManager {
         content.sound = .default
         content.badge = 1
         
-        let request = UNNotificationRequest(identifier: UUID(), content: <#T##UNNotificationContent#>, trigger: <#T##UNNotificationTrigger?#>)
+        // time
+//        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5.0, repeats: false)
+        
+        // calendar
+        var dateComponents = DateComponents()
+        dateComponents.hour = 9
+        dateComponents.minute = 0
+        dateComponents.weekday = 2
+//        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+        
+        // location
+        let coordinate = CLLocationCoordinate2D(latitude: 40.00,
+                                                longitude: 50.00)
+        
+        let region = CLCircularRegion(center: coordinate,
+                                      radius: 100,
+                                      identifier: UUID().uuidString)
+        region.notifyOnEntry = true
+        region.notifyOnExit = false
+        let trigger = UNLocationNotificationTrigger(region: region, repeats: true)
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString,
+                                            content: content,
+                                            trigger: trigger)
+        
+        UNUserNotificationCenter.current().add(request)
+    }
+    
+    func cancelNotification() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
 }
 
@@ -43,6 +74,17 @@ struct LocalNotificationBootcamp: View {
             Button("Request permission") {
                 NotificationManager.shared.requestAuthorization()
             }
+            
+            Button("Schedule notification") {
+                NotificationManager.shared.scheduleNotification()
+            }
+            
+            Button("Cancel notification") {
+                NotificationManager.shared.cancelNotification()
+            }
+        }
+        .onAppear {
+            UNUserNotificationCenter.current().setBadgeCount(0)
         }
     }
 }
