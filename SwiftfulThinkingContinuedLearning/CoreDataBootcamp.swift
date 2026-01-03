@@ -7,7 +7,7 @@
 
 import SwiftUI
 import CoreData
-import Combine
+internal import Combine
 
 class CoreDataViewModel: ObservableObject {
     let container: NSPersistentContainer

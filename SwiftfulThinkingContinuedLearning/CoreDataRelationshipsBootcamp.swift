@@ -7,7 +7,7 @@
 
 import SwiftUI
 import CoreData
-import Combine
+internal import Combine
 
 /// 3 entities
 /// BusinessEntity
